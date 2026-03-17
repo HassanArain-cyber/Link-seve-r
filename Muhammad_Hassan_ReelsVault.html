@@ -1,0 +1,896 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="theme-color" content="#0a0a0f"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="ReelsVault"/>
+<title>ReelsVault</title>
+
+<!-- PWA manifest should be a separate manifest.json file on GitHub Pages -->
+<link rel="manifest" href="manifest.json"/>
+
+<style>
+  /* System font stack - no external requests, works offline */
+</style>
+
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131c;
+    --surface2: #1c1c2a;
+    --border: rgba(255,255,255,0.07);
+    --accent: #a78bfa;
+    --accent2: #f472b6;
+    --accent3: #38bdf8;
+    --text: #f0eeff;
+    --muted: #8880a8;
+    --danger: #f87171;
+    --ig: #e1306c;
+    --tt: #010101;
+    --yt: #ff0000;
+    --tw: #1da1f2;
+    --r: 14px;
+    --font-head: -apple-system, 'SF Pro Display', 'Segoe UI', system-ui, sans-serif;
+    --font-body: -apple-system, 'SF Pro Text', 'Segoe UI', system-ui, sans-serif;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  /* Safety: ensure content is always visible */
+  html, body { visibility: visible !important; opacity: 1 !important; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    min-height: 100dvh;
+    overflow-x: hidden;
+  }
+
+  /* ─── ANIMATED BG ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 20% 10%, rgba(167,139,250,0.12) 0%, transparent 60%),
+      radial-gradient(ellipse 50% 50% at 80% 80%, rgba(244,114,182,0.08) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── LAYOUT ─── */
+  .app { position: relative; z-index: 1; max-width: 480px; margin: 0 auto; padding: 0 0 100px; }
+
+  /* ─── HEADER ─── */
+  header {
+    padding: 52px 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .logo-icon {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .logo-text {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header-count {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface2);
+    padding: 4px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+  }
+
+  /* ─── ADD BOX ─── */
+  .add-section { padding: 0 16px 24px; }
+
+  .add-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 18px 18px 14px;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.4);
+  }
+  .add-card-title {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .input-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .url-input {
+    flex: 1;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 12px 14px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .url-input:focus { border-color: var(--accent); }
+  .url-input::placeholder { color: var(--muted); }
+
+  .add-btn {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    border-radius: var(--r);
+    color: #fff;
+    font-family: var(--font-head);
+    font-size: 15px;
+    font-weight: 700;
+    padding: 12px 18px;
+    cursor: pointer;
+    transition: opacity .2s, transform .1s;
+    flex-shrink: 0;
+  }
+  .add-btn:active { transform: scale(0.95); opacity: .85; }
+
+  .note-input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: var(--r);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 10px 14px;
+    outline: none;
+    resize: none;
+    transition: border-color .2s;
+  }
+  .note-input:focus { border-color: var(--accent); }
+  .note-input::placeholder { color: var(--muted); }
+
+  /* ─── PLATFORM PILLS ─── */
+  .platforms {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .platform-pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 99px;
+    border: 1.5px solid;
+    cursor: pointer;
+    transition: all .2s;
+    font-family: var(--font-head);
+    letter-spacing: .3px;
+    user-select: none;
+  }
+  .pill-ig  { color: var(--ig);  border-color: var(--ig);  }
+  .pill-tt  { color: #fff;       border-color: #fff;       }
+  .pill-yt  { color: var(--yt);  border-color: var(--yt);  }
+  .pill-x   { color: var(--tw); border-color: var(--tw); }
+  .pill-other { color: var(--muted); border-color: var(--muted); }
+  .platform-pill.active { background: currentColor; }
+  .platform-pill.active span { filter: invert(1); color: #000; }
+  .platform-pill span { pointer-events: none; }
+
+  /* ─── FILTER / SEARCH ─── */
+  .filter-bar {
+    padding: 0 16px 16px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .search-wrap { flex: 1; position: relative; }
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 10px 14px 10px 38px;
+    outline: none;
+    transition: border-color .2s;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--muted); }
+  .search-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--muted);
+    font-size: 15px;
+    pointer-events: none;
+  }
+
+  .sort-btn {
+    background: var(--surface);
+    border: 1.5px solid var(--border);
+    border-radius: 99px;
+    color: var(--muted);
+    font-size: 13px;
+    padding: 10px 14px;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: var(--font-body);
+    transition: border-color .2s, color .2s;
+  }
+  .sort-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ─── FILTER TABS ─── */
+  .filter-tabs {
+    display: flex;
+    gap: 8px;
+    padding: 0 16px 20px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .filter-tabs::-webkit-scrollbar { display: none; }
+  .tab {
+    font-size: 12px;
+    font-weight: 600;
+    font-family: var(--font-head);
+    padding: 6px 14px;
+    border-radius: 99px;
+    border: 1.5px solid var(--border);
+    color: var(--muted);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all .2s;
+    letter-spacing: .3px;
+    flex-shrink: 0;
+  }
+  .tab.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* ─── EMPTY ─── */
+  .empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+  .empty-icon { font-size: 48px; margin-bottom: 16px; }
+  .empty h3 { font-family: var(--font-head); font-size: 18px; color: var(--text); margin-bottom: 8px; }
+  .empty p { font-size: 14px; line-height: 1.5; }
+
+  /* ─── CARDS ─── */
+  .cards { padding: 0 16px; display: flex; flex-direction: column; gap: 12px; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 16px;
+    animation: slideUp .3s ease forwards;
+    overflow: hidden;
+    transition: box-shadow .2s, transform .2s;
+  }
+  .card:active { transform: scale(0.985); }
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card-top {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .platform-badge {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .badge-ig   { background: linear-gradient(135deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); }
+  .badge-tt   { background: #010101; border: 1px solid #333; }
+  .badge-yt   { background: #ff0000; }
+  .badge-x    { background: #1da1f2; }
+  .badge-other{ background: var(--surface2); border: 1px solid var(--border); }
+
+  .card-meta { flex: 1; min-width: 0; }
+  .card-platform {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 3px;
+  }
+  .card-url {
+    font-size: 13px;
+    color: var(--accent);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .card-url:hover { text-decoration: underline; }
+  .card-note {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.4;
+    margin-top: 4px;
+  }
+  .card-date {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  .card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    border-top: 1px solid var(--border);
+    padding-top: 12px;
+  }
+  .action-btn {
+    flex: 1;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 8px 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all .2s;
+  }
+  .action-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .action-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+  .action-btn.fav-active { color: var(--accent2); border-color: var(--accent2); }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position: fixed;
+    bottom: 90px;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2);
+    border: 1px solid var(--accent);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 13px;
+    padding: 10px 20px;
+    border-radius: 99px;
+    opacity: 0;
+    transition: all .3s;
+    pointer-events: none;
+    z-index: 999;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ─── BOTTOM NAV ─── */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(10,10,15,0.9);
+    backdrop-filter: blur(20px);
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+    z-index: 100;
+  }
+  .nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    font-size: 10px;
+    font-family: var(--font-head);
+    font-weight: 600;
+    letter-spacing: .5px;
+    color: var(--muted);
+    cursor: pointer;
+    padding: 4px 16px;
+    border-radius: 10px;
+    transition: color .2s;
+    text-transform: uppercase;
+    border: none;
+    background: none;
+  }
+  .nav-item.active { color: var(--accent); }
+  .nav-item .nav-icon { font-size: 20px; }
+
+  /* ─── STATS ─── */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    padding: 0 16px 24px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px 10px;
+    text-align: center;
+  }
+  .stat-num {
+    font-family: var(--font-head);
+    font-size: 22px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-label {
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+  }
+
+  /* ─── SHARE BANNER ─── */
+  .share-banner {
+    margin: 0 16px 20px;
+    background: linear-gradient(135deg, rgba(167,139,250,.15), rgba(244,114,182,.10));
+    border: 1.5px solid rgba(167,139,250,.3);
+    border-radius: 16px;
+    padding: 14px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .share-banner-icon { font-size: 24px; }
+  .share-banner-text { flex: 1; }
+  .share-banner-text strong { font-family: var(--font-head); font-size: 13px; display: block; margin-bottom: 3px; }
+  .share-banner-text span { font-size: 12px; color: var(--muted); line-height: 1.4; display: block; }
+
+  /* ─── HOW TO ─── */
+  .how-section { padding: 0 16px 24px; }
+  .how-title {
+    font-family: var(--font-head);
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .how-steps { display: flex; flex-direction: column; gap: 10px; }
+  .how-step {
+    display: flex; gap: 12px; align-items: flex-start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px;
+  }
+  .step-num {
+    width: 26px; height: 26px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-head);
+    font-size: 12px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .step-body strong { font-family: var(--font-head); font-size: 13px; display: block; margin-bottom: 3px; }
+  .step-body span { font-size: 12px; color: var(--muted); line-height: 1.4; }
+
+  /* ─── HIDDEN ─── */
+  .hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <header>
+    <div class="logo">
+      <div class="logo-icon">🎬</div>
+      <span class="logo-text">ReelsVault</span>
+    </div>
+    <div class="header-count" id="headerCount">0 reels</div>
+  </header>
+
+  <!-- PAGE: HOME -->
+  <div id="pageHome">
+    <!-- Stats -->
+    <div class="stats-grid" id="statsGrid"></div>
+
+    <!-- Add Section -->
+    <div class="add-section">
+      <div class="add-card">
+        <div class="add-card-title">💾 Save a Reel</div>
+        <div class="input-row">
+          <input class="url-input" id="urlInput" type="url" placeholder="Paste link here…" autocomplete="off" autocorrect="off" spellcheck="false"/>
+          <button class="add-btn" onclick="addReel()">Save</button>
+        </div>
+        <textarea class="note-input" id="noteInput" rows="2" placeholder="Add a note (optional)…"></textarea>
+        <div class="platforms" id="platformPills">
+          <div class="platform-pill pill-ig" data-p="Instagram" onclick="selectPlatform(this)"><span>📸 Instagram</span></div>
+          <div class="platform-pill pill-tt" data-p="TikTok" onclick="selectPlatform(this)"><span>🎵 TikTok</span></div>
+          <div class="platform-pill pill-yt" data-p="YouTube" onclick="selectPlatform(this)"><span>▶️ YouTube</span></div>
+          <div class="platform-pill pill-x"  data-p="Twitter/X" onclick="selectPlatform(this)"><span>𝕏 Twitter</span></div>
+          <div class="platform-pill pill-other" data-p="Other" onclick="selectPlatform(this)"><span>🔗 Other</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Share Banner -->
+    <div class="share-banner">
+      <span class="share-banner-icon">📲</span>
+      <div class="share-banner-text">
+        <strong>Share directly to ReelsVault</strong>
+        <span>Install as app (Add to Home Screen), then use the Share button in Instagram/TikTok → pick ReelsVault.</span>
+      </div>
+    </div>
+
+    <!-- Filter -->
+    <div class="filter-bar">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" id="searchInput" placeholder="Search notes or links…" oninput="renderCards()"/>
+      </div>
+      <button class="sort-btn" onclick="toggleSort()">⇅ <span id="sortLabel">New</span></button>
+    </div>
+
+    <div class="filter-tabs" id="filterTabs">
+      <div class="tab active" data-filter="All" onclick="setFilter(this)">All</div>
+      <div class="tab" data-filter="⭐ Favourites" onclick="setFilter(this)">⭐ Faves</div>
+      <div class="tab" data-filter="Instagram" onclick="setFilter(this)">Instagram</div>
+      <div class="tab" data-filter="TikTok" onclick="setFilter(this)">TikTok</div>
+      <div class="tab" data-filter="YouTube" onclick="setFilter(this)">YouTube</div>
+      <div class="tab" data-filter="Twitter/X" onclick="setFilter(this)">Twitter/X</div>
+      <div class="tab" data-filter="Other" onclick="setFilter(this)">Other</div>
+    </div>
+
+    <div class="cards" id="cardsContainer"></div>
+  </div>
+
+  <!-- PAGE: HOW TO -->
+  <div id="pageHow" class="hidden">
+    <div class="how-section" style="padding-top:8px">
+      <div class="how-title">📖 How to Use</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <strong>Copy & Paste</strong>
+            <span>Copy any reel/video link, paste it into the input box, add an optional note, and tap Save.</span>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <strong>Install as App (PWA)</strong>
+            <span>In your browser tap the menu → "Add to Home Screen". This installs ReelsVault as a real app.</span>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <strong>Share from Instagram/TikTok</strong>
+            <span>Open a reel → tap Share (paper-plane icon) → "More" → select ReelsVault from the app list. The link auto-fills!</span>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <strong>Organise & Search</strong>
+            <span>Filter by platform, search notes, mark favourites, or copy/open any saved link anytime.</span>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="step-num">5</div>
+          <div class="step-body">
+            <strong>Export / Backup</strong>
+            <span>Tap Export on the Settings tab to download all your links as a JSON file.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PAGE: SETTINGS -->
+  <div id="pageSettings" class="hidden">
+    <div style="padding:8px 16px 24px">
+      <div class="how-title" style="margin-bottom:16px">⚙️ Settings</div>
+
+      <div class="add-card" style="margin-bottom:14px">
+        <div class="add-card-title">📤 Export Data</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">Download all your saved reels as a JSON backup file.</p>
+        <button class="add-btn" style="width:100%;border-radius:var(--r)" onclick="exportData()">Export JSON</button>
+      </div>
+
+      <div class="add-card" style="margin-bottom:14px">
+        <div class="add-card-title">📥 Import Data</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">Import a previously exported JSON backup.</p>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)"/>
+        <button class="add-btn" style="width:100%;border-radius:var(--r);background:var(--surface2);color:var(--text);border:1.5px solid var(--border)" onclick="document.getElementById('importFile').click()">Choose File</button>
+      </div>
+
+      <div class="add-card">
+        <div class="add-card-title" style="color:#f87171">🗑️ Danger Zone</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.5">Delete all saved reels. This cannot be undone.</p>
+        <button class="add-btn" style="width:100%;border-radius:var(--r);background:transparent;border:1.5px solid var(--danger);color:var(--danger)" onclick="clearAll()">Delete All Reels</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /app -->
+
+<!-- Bottom Nav -->
+<nav class="bottom-nav">
+  <button class="nav-item active" id="navHome" onclick="showPage('home')">
+    <span class="nav-icon">🏠</span>Home
+  </button>
+  <button class="nav-item" id="navHow" onclick="showPage('how')">
+    <span class="nav-icon">📖</span>How To
+  </button>
+  <button class="nav-item" id="navSettings" onclick="showPage('settings')">
+    <span class="nav-icon">⚙️</span>Settings
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────────────
+let reels = JSON.parse(localStorage.getItem('reels_v2') || '[]');
+let selectedPlatform = 'Auto';
+let filterPlatform  = 'All';
+let sortOld = false;
+let activePage = 'home';
+
+// ─── PLATFORM DETECTION ──────────────────────────────────────────
+function detectPlatform(url) {
+  if (!url) return 'Other';
+  const u = url.toLowerCase();
+  if (u.includes('instagram.com') || u.includes('instagr.am')) return 'Instagram';
+  if (u.includes('tiktok.com') || u.includes('vm.tiktok')) return 'TikTok';
+  if (u.includes('youtube.com') || u.includes('youtu.be')) return 'YouTube';
+  if (u.includes('twitter.com') || u.includes('t.co') || u.includes('x.com')) return 'Twitter/X';
+  return 'Other';
+}
+
+const ICONS = { Instagram:'📸', TikTok:'🎵', YouTube:'▶️', 'Twitter/X':'𝕏', Other:'🔗' };
+const BADGE_CLASS = { Instagram:'badge-ig', TikTok:'badge-tt', YouTube:'badge-yt', 'Twitter/X':'badge-x', Other:'badge-other' };
+
+// ─── SAVE ─────────────────────────────────────────────────────────
+function save() { localStorage.setItem('reels_v2', JSON.stringify(reels)); }
+
+// ─── ADD REEL ─────────────────────────────────────────────────────
+function addReel(urlOverride, noteOverride) {
+  const rawUrl  = (urlOverride || document.getElementById('urlInput').value).trim();
+  const rawNote = (noteOverride !== undefined ? noteOverride : document.getElementById('noteInput').value).trim();
+  if (!rawUrl) { toast('⚠️ Please paste a link first'); return; }
+
+  let url = rawUrl;
+  if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+  const platform = selectedPlatform === 'Auto' ? detectPlatform(url) : selectedPlatform;
+  const reel = { id: Date.now(), url, note: rawNote, platform, fav: false, date: new Date().toISOString() };
+  reels.unshift(reel);
+  save();
+
+  document.getElementById('urlInput').value  = '';
+  document.getElementById('noteInput').value = '';
+  selectedPlatform = 'Auto';
+  document.querySelectorAll('.platform-pill').forEach(p => p.classList.remove('active'));
+
+  renderAll();
+  toast('✅ Reel saved!');
+}
+
+// ─── SELECT PLATFORM ──────────────────────────────────────────────
+function selectPlatform(el) {
+  document.querySelectorAll('.platform-pill').forEach(p => p.classList.remove('active'));
+  if (selectedPlatform === el.dataset.p) {
+    selectedPlatform = 'Auto';
+  } else {
+    selectedPlatform = el.dataset.p;
+    el.classList.add('active');
+  }
+}
+
+// ─── FILTER / SEARCH ──────────────────────────────────────────────
+function setFilter(el) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  filterPlatform = el.dataset.filter;
+  renderCards();
+}
+
+function toggleSort() {
+  sortOld = !sortOld;
+  document.getElementById('sortLabel').textContent = sortOld ? 'Old' : 'New';
+  renderCards();
+}
+
+function getFiltered() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  let list = [...reels];
+  if (filterPlatform === '⭐ Favourites') list = list.filter(r => r.fav);
+  else if (filterPlatform !== 'All') list = list.filter(r => r.platform === filterPlatform);
+  if (q) list = list.filter(r => r.url.toLowerCase().includes(q) || (r.note||'').toLowerCase().includes(q));
+  if (sortOld) list.reverse();
+  return list;
+}
+
+// ─── DELETE / FAV / COPY ─────────────────────────────────────────
+function deleteReel(id) {
+  reels = reels.filter(r => r.id !== id);
+  save(); renderAll();
+  toast('🗑️ Deleted');
+}
+
+function toggleFav(id) {
+  const r = reels.find(r => r.id === id);
+  if (r) { r.fav = !r.fav; save(); renderAll(); toast(r.fav ? '⭐ Added to favourites' : '☆ Removed from favourites'); }
+}
+
+function copyUrl(url) {
+  navigator.clipboard.writeText(url).then(() => toast('📋 Link copied!')).catch(() => toast('⚠️ Copy failed'));
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────
+function formatDate(iso) {
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined, { day:'numeric', month:'short', year:'numeric' });
+}
+
+function renderCards() {
+  const list = getFiltered();
+  const c = document.getElementById('cardsContainer');
+  if (!list.length) {
+    c.innerHTML = `<div class="empty"><div class="empty-icon">🎬</div><h3>No reels here</h3><p>Save a link above or change your filter.</p></div>`;
+    return;
+  }
+  c.innerHTML = list.map(r => `
+    <div class="card" id="card-${r.id}">
+      <div class="card-top">
+        <div class="platform-badge ${BADGE_CLASS[r.platform]||'badge-other'}">${ICONS[r.platform]||'🔗'}</div>
+        <div class="card-meta">
+          <div class="card-platform">${r.platform}</div>
+          <a class="card-url" href="${r.url}" target="_blank" rel="noopener noreferrer">${r.url}</a>
+          ${r.note ? `<div class="card-note">📝 ${r.note}</div>` : ''}
+          <div class="card-date">🗓 ${formatDate(r.date)}</div>
+        </div>
+      </div>
+      <div class="card-actions">
+        <button class="action-btn ${r.fav?'fav-active':''}" onclick="toggleFav(${r.id})">${r.fav?'⭐':'☆'} Fave</button>
+        <button class="action-btn" onclick="copyUrl('${r.url.replace(/'/g,"\\'")}')">📋 Copy</button>
+        <button class="action-btn" onclick="window.open('${r.url.replace(/'/g,"\\'")}','_blank')">🔗 Open</button>
+        <button class="action-btn danger" onclick="deleteReel(${r.id})">🗑️</button>
+      </div>
+    </div>`).join('');
+}
+
+function renderStats() {
+  const total = reels.length;
+  const favs  = reels.filter(r=>r.fav).length;
+  const plats = [...new Set(reels.map(r=>r.platform))].length;
+  document.getElementById('statsGrid').innerHTML = [
+    ['Total', total], ['Favourites', favs], ['Platforms', plats]
+  ].map(([l,n]) => `<div class="stat-card"><div class="stat-num">${n}</div><div class="stat-label">${l}</div></div>`).join('');
+  const cnt = total;
+  document.getElementById('headerCount').textContent = cnt + ' reel' + (cnt!==1?'s':'');
+}
+
+function renderAll() { renderStats(); renderCards(); }
+
+// ─── PAGES ────────────────────────────────────────────────────────
+function showPage(p) {
+  activePage = p;
+  ['Home','How','Settings'].forEach(name => {
+    document.getElementById('page'+name).classList.toggle('hidden', name.toLowerCase() !== p);
+    document.getElementById('nav'+name).classList.toggle('active', name.toLowerCase() === p);
+  });
+}
+
+// ─── EXPORT / IMPORT ─────────────────────────────────────────────
+function exportData() {
+  const blob = new Blob([JSON.stringify(reels, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'reelsvault-backup.json';
+  a.click();
+  toast('📤 Exported!');
+}
+
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!Array.isArray(data)) throw new Error('Invalid');
+      reels = [...data, ...reels];
+      save(); renderAll();
+      toast(`📥 Imported ${data.length} reels`);
+    } catch { toast('⚠️ Invalid backup file'); }
+  };
+  reader.readAsText(file);
+}
+
+function clearAll() {
+  if (!confirm('Delete ALL saved reels? This cannot be undone.')) return;
+  reels = []; save(); renderAll();
+  toast('🗑️ All reels deleted');
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ─── PWA SHARE TARGET ─────────────────────────────────────────────
+function handleSharedUrl() {
+  const params = new URLSearchParams(location.search);
+  const shared = params.get('shared_url') || params.get('url') ||
+                 params.get('text')       || params.get('shared_text') || '';
+  if (!shared) return;
+  // Extract URL from text (in case text contains a URL embedded)
+  const urlMatch = shared.match(/https?:\/\/[^\s]+/);
+  const extracted = urlMatch ? urlMatch[0] : shared;
+  if (extracted) {
+    document.getElementById('urlInput').value = extracted;
+    addReel(extracted);
+    // Clean URL
+    history.replaceState({}, '', location.pathname);
+  }
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────
+renderAll();
+handleSharedUrl();
+</script>
+</body>
+</html>
